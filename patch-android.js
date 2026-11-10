@@ -25,7 +25,7 @@ fs.mkdirSync(pkgDir, { recursive: true });
 ['TwinsPrinterPlugin.java', 'LanHub.java'].forEach(f => {
   const src = path.join(root, f);
   must(fs.existsSync(src), f + ' tidak ada di repositori (salin dari repositori TWINS POS)');
-  const code = fs.readFileSync(src, 'utf8').replace(/id\.twinspos\.pos/g, 'id.rbban.pos');
+  const code = fs.readFileSync(src, 'utf8').replace(/id\.twinspos\.pos/g, 'id.rbban.pos').replace(/TWINS POS/g, 'RB POS');
   fs.writeFileSync(path.join(pkgDir, f), code);
 });
 fs.writeFileSync(path.join(pkgDir, 'MainActivity.java'),
