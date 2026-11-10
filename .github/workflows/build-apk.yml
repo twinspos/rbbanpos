@@ -1,0 +1,61 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Pasang kunci tanda tangan
+        run: |
+          mkdir -p ~/.android
+          cp debug.keystore ~/.android/debug.keystore
+
+      - name: Siapkan isi RB POS
+        run: |
+          mkdir -p www
+          cp index.html www/index.html
+
+      - name: Pasang dependensi
+        run: npm install
+
+      - name: Buat proyek Android
+        run: npx cap add android
+
+      - name: Pasang plugin cetak, izin, dan ikon
+        run: node patch-android.js
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+
+      - name: Salin isi RB POS ke Android
+        run: npx cap sync android
+
+      - name: Bangun APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Ganti nama APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk RB-POS-v1.${{ github.run_number }}.apk
+
+      - name: Simpan APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RB-POS-apk
+          path: RB-POS-v1.${{ github.run_number }}.apk
+          if-no-files-found: error
