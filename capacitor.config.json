@@ -1,0 +1,12 @@
+{
+  "appId": "id.rbban.pos",
+  "appName": "RB POS",
+  "webDir": "www",
+  "backgroundColor": "#0d0d0d",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
